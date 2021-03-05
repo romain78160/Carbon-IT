@@ -1,0 +1,85 @@
+
+<link rel="stylesheet" href="/inputSpin/css/bootstrap-touchspin.min.css" />
+<script src="/inputSpin/js/bootstrap-touchspin.js"></script>
+
+<input type="text" id="<%= id %>" name="<%= id %>" class="inputNum32" 
+    value="<%= value %>" <%= isrequired %>
+    data-bts-min="<%= min %>" data-bts-max="<%= max %>" data-step="<%= step %>" data-bts-decimals="<%= decimals %>" />
+
+<script type="text/javascript">
+
+$("#<%= id %>").TouchSpin({
+
+// // Minimum value.
+// min: 0,  cf: attribut data-bts-min !!!!!!!!
+
+// // Maximum value.
+// max: 100, cf: attribut data-bts-max !!!!!!!!
+
+// Applied when no explicit value is set on the input with the value attribute. 
+// Empty string means that the value remains empty on initialization.
+initval: '0',
+replacementval: '',
+
+// Number of decimal points.    
+// decimals: 2, cf: attribut data-bts-decimals !!!!!!!!
+
+// none | floor | round | ceil
+forcestepdivisibility: 'none', 
+
+// Enables the traditional up/down buttons.
+verticalbuttons: false,
+
+// Class of the up button with vertical buttons mode enabled.
+verticalupclass: 'glyphicon glyphicon-chevron-up',
+
+// Class of the down button with vertical buttons mode enabled.
+verticaldownclass: 'glyphicon glyphicon-chevron-down',
+
+// Boost at every nth step.
+boostat: 5, 
+
+// If enabled, the the spinner is continually becoming faster as holding the button.
+booster: true,
+
+// Maximum step when boosted.
+maxboostedstep: 10, 
+
+// Text after the input.
+postfix: '', 
+
+// Text before the input.
+prefix: '', 
+
+// Extra class(es) for prefix.
+prefix_extraclass: '',
+
+//  Extra class(es) for postfix.
+postfix_extraclass: '',
+
+// Incremental/decremental step on up/down change.
+// step: 1, cf: attribut data-bts-step !!!!!!!!
+
+// Refresh rate of the spinner in milliseconds.
+stepinterval: 100, 
+
+// Time in milliseconds before the spinner starts to spin.
+stepintervaldelay: 500,
+
+//  Enables the mouse wheel to change the value of the input.
+mousewheel: true,
+
+//  Class(es) of down button.
+buttondown_class: 'btn btn-default',
+
+//  Class(es) of up button.
+buttonup_class: 'btn btn-default',
+
+// Text for down button
+buttondown_txt: '-',
+
+// Text for up button
+buttonup_txt: '+'
+
+});
+</script>

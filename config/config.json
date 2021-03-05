@@ -1,0 +1,30 @@
+{
+  "development": {
+    "appname":"TreasureMap",
+    "secretKey" : "TreasureMapsecretKey",
+    "username": "devuser",
+    "password": "TreasureMap%21",
+    "database": "",
+    "host": "localhost",
+    "dialect": "mysql",
+    "dialectModulePath": "mysql2",
+    "serverport": "8081",    
+    "cookieName": "_TreasureMap",
+    "pool": {
+      "max": 10,
+      "min": 0,
+      "idle": 3000
+    },
+    "baseurl": "http://localhost:8081/",
+    "redisServer":{
+      "host":"127.0.0.1",
+      "port":"6379"
+    },
+    "log": {
+      "path": "logs",
+      "fileNamePattern": "TreasureMap-roll-<DATE>.log",
+      "level": "info"
+    },
+    "logging": false
+  }
+}
