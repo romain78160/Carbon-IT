@@ -75,8 +75,6 @@ module.exports = {
 
       for await (const line of rl) {
 
-        console.log("LINE = ",line);
-
         var lineTab = line.split(' - ');
 
         //test de la 1ere lettre pour connaitre le type
