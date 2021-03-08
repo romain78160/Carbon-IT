@@ -6,6 +6,7 @@ var config    = require('../config/config.json')[env];
 
 const fs = require("fs");
 const readline = require("readline");
+const moment    = require('moment');
 
 const map = require("../classes/cMap");
 const mountain = require("../classes/cMountain");
@@ -22,10 +23,47 @@ module.exports = {
 
   launch : function(req, res, next){
 
-    // Lecture du fichier d'entrée (inputFile.txt)
+    var dir = __dirname + '/../games';
 
-    async function processInputFile() {
-      const fileStream = fs.createReadStream('Inputfile.txt');
+    if (!fs.existsSync(dir)) 
+      {fs.mkdirSync(dir);}
+    const lengthGame = fs.readdirSync(dir).length;
+
+    //creation d'un dossier de jeu avec la date du moment
+    var currentDate = moment().format("DDMMYYYY_HHmmss");  
+    var rootDir = dir+"/"+lengthGame+"_"+currentDate;
+    if (!fs.existsSync(rootDir)) 
+      {fs.mkdirSync(rootDir);}
+
+    //écriture du fichier d'entrée
+    async function writeInputfile(_rootDir, data){
+      var writer = fs.createWriteStream(rootDir+"/Inputfile.txt", {flags:'a'});
+      
+      //map
+      writer.write(`C - ${data.map.w} - ${data.map.h}\n`);
+
+      //mountains
+      data.mountainList.forEach(aMount => {
+        writer.write(`M - ${aMount.X} - ${aMount.Y}\n`);
+      });
+
+      //treasors
+      data.treasorList.forEach(aTreasor => {
+        writer.write(`T - ${aTreasor.X} - ${aTreasor.Y} - ${aTreasor.nb}\n`);
+      });
+
+      //adventurers
+      data.adventurerList.forEach(aAdventurer => {
+        writer.write(`A - ${aAdventurer.name} - ${aAdventurer.X} - ${aAdventurer.Y} - ${aAdventurer.dir} - ${aAdventurer.mouv}\n`);
+      });
+
+      writer.end();
+    }
+    writeInputfile(rootDir, req.body);
+    
+
+    async function processInputFile(_inputFile) {
+      const fileStream = fs.createReadStream(_inputFile);
 
       const rl = readline.createInterface({
         input: fileStream,
@@ -36,6 +74,8 @@ module.exports = {
       var aMap = new map();
 
       for await (const line of rl) {
+
+        console.log("LINE = ",line);
 
         var lineTab = line.split(' - ');
 
@@ -88,7 +128,8 @@ module.exports = {
       
       var resultStr = aMap.toString();
 
-      fs.writeFile('OutputFile.txt', resultStr, function (err) {
+      var dir = require('path').dirname(_inputFile);
+      fs.writeFile(dir+'/OutputFile.txt', resultStr, function (err) {
 
         if (err){
           res.status(200).json(err);
@@ -100,7 +141,7 @@ module.exports = {
 
     }
 
-    processInputFile();
+    processInputFile(rootDir+"/Inputfile.txt");
 
   }
 

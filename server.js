@@ -17,7 +17,7 @@ app.use(express.static(__dirname + '/utils'));//ajoute le dossier dans les reche
 
 app.set('views', [
                         path.join(__dirname, 'views'),
-                        path.join(__dirname, 'utils')//permet le chargment des ejs
+                        path.join(__dirname, 'utils')//permet le chargement des ejs
                     ]
         );
 app.set('view engine', 'ejs');

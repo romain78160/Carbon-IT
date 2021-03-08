@@ -1,0 +1,25 @@
+<select cec-dependencies="<%= dependencies %>" id="<%= id %>" name="<%= id %>" 
+    class="form-control selectpicker show-tick <%= className %>"  <%= isrequired %>
+    <%= (isMultiple)?'multiple':'' %>
+    title="<%= title %>" <%= (options.length==0)?'disabled':'' %>    
+    data-width="auto"
+    data-selected-text-format="count"
+    data-show-subtext="true"
+    >
+
+    <%  if (typeof withEmpty !== 'undefined' && typeof options !== 'undefined' && options.length > 0 ){
+        if (withEmpty === true || withEmpty == 'true'){
+            %>
+            <option diab-parent-id="" value="" ></option>
+            <%
+        }
+    } %>
+
+    <% options.forEach(function(option) { %>
+        <option cec-parent-id="<%= option.parentId %>" 
+            value="<%= option.id %>" <% if (option.id==selected){ %> selected="selected" <% } %>
+            <% if (option.info){ %> data-subtext="<%= option.info%>" <% } %> >
+            <%= option.lib %>            
+        </option>
+    <% }) %>
+</select>

@@ -1,0 +1,453 @@
+<div>
+    <span>Aventuriers</span>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="adventurerName">Nom</label>
+        <div class="col-sm-9">
+            <input type="text" class="form-control" name="adventurerName" id="adventurerName" required>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="adventurerX">position X</label>
+        <div class="col-sm-2">
+            <%- include('inputSpin/component',
+                {
+                    id: 'adventurerX',
+                    value: 2,
+                    className: "",
+                    isrequired: "required",
+                    min: 0,
+                    max: 30,
+                    step: 1,
+                    decimals: 0
+                }
+            ) %>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="adventurerY">position Y</label>
+        <div class="col-sm-2">
+            <%- include('inputSpin/component',
+                {
+                    id: 'adventurerY',
+                    value: 2,
+                    className: "",
+                    isrequired: "required",
+                    min: 0,
+                    max: 30,
+                    step: 1,
+                    decimals: 0
+                }
+            ) %>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="adventurerDir">Orientation</label>
+        <div class="col-sm-9">
+            <%- include('selectTag/selectTag',
+            {
+                id: 'adventurerDir', 
+                title : 'Orientation...',
+                isMultiple: false,
+                options: [
+                    {id: 'N' , lib: 'Nord'},
+                    {id: 'E' , lib: 'Est'},
+                    {id: 'S' , lib: 'Sud'},
+                    {id: 'O' , lib: 'Ouest'}
+                ],
+                selected: 'S',
+                dependencies:"",
+                className: "",
+                isrequired: "required" 
+            }
+        ) %>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="col-sm-3 control-label" for="adventurerMouv">Mouvements</label>
+        <div class="col-sm-9">
+            <input type="text" class="form-control" name="adventurerMouv" id="adventurerMouv"
+            pattern="[AGD]+" required>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-sm-6">
+                <div class="mb-md">
+                    <button id="addAdventurer" class="btn btn-primary">Ajouter<i class="fa fa-plus"></i></button>
+                </div>
+            </div>
+        </div>
+        <table class="table table-bordered table-striped mb-none" id="tableAdventurer">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Position X</th>
+                    <th>Position Y</th>
+                    <th>Orientation</th>
+                    <th>Mouvements</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script src="<%= baseurl %>javascripts/datatables/datatables.custom.js"></script>
+<script src="<%= baseurl %>javascripts/datatables/natural.js"></script>
+
+<script>
+
+var adventurerList = [];
+    
+(function( $ ) {
+
+'use strict';
+
+var adventurerTable = {
+
+	options: {
+		addButton: '#addAdventurer',
+		table: '#tableAdventurer',
+		dialog: {
+			wrapper: '#dialog',
+			cancelButton: '#dialogCancel',
+			confirmButton: '#dialogConfirm',
+		}
+	},
+
+	initialize: function() {
+		this
+			.setVars()
+			.build()
+			.events();
+	},
+
+	setVars: function() {
+		this.$table				= $( this.options.table );
+		this.$addButton			= $( this.options.addButton );
+
+		// dialog
+		this.dialog				= {};
+		this.dialog.$wrapper	= $( this.options.dialog.wrapper );
+		this.dialog.$cancel		= $( this.options.dialog.cancelButton );
+		this.dialog.$confirm	= $( this.options.dialog.confirmButton );
+
+		return this;
+	},
+
+	build: function() {
+		this.datatable = this.$table.DataTable({
+			aoColumns: [
+				null,
+				null,
+				null,
+				null,
+				null,
+				{ "bSortable": false }
+			],
+            oLanguage: {
+                "sProcessing": "Traitement en cours ...",
+                "sLengthMenu": "Afficher _MENU_ lignes",
+                "sZeroRecords": "Aucun résultat trouvé",
+                "sEmptyTable": "Aucune donnée disponible",
+                "sInfo": "Lignes _START_ à _END_ sur _TOTAL_",
+                "sInfoEmpty": "Aucune ligne affichée",
+                "sInfoFiltered": "(Filtrées à partir de _MAX_ résultats)",
+                "sInfoPostFix": "",
+                "sSearch": "Chercher:",
+                "sUrl": "",
+                "sInfoThousands": ",",
+                "sLoadingRecords": "Chargement...",
+                "oPaginate": {
+                "sFirst": "Premier", "sLast": "Dernier", "sNext": "Suivant", "sPrevious": "Précédent"
+                },
+                "oAria": {
+                "sSortAscending": ": Trier par ordre croissant", "sSortDescending": ": Trier par ordre décroissant"
+                },
+                "sDecimal": ",",
+                "sThousands": " "
+            }
+		});
+
+		window.dt = this.datatable;
+
+		return this;
+	},
+
+	events: function() {
+		var _self = this;
+
+		this.$table
+			.on('click', 'a.save-row', function( e ) {
+				e.preventDefault();
+
+				_self.rowSave( $(this).closest( 'tr' ) );
+			})
+			.on('click', 'a.cancel-row', function( e ) {
+				e.preventDefault();
+
+				_self.rowCancel( $(this).closest( 'tr' ) );
+			})
+			.on('click', 'a.edit-row', function( e ) {
+				e.preventDefault();
+
+				_self.rowEdit( $(this).closest( 'tr' ) );
+			})
+			.on( 'click', 'a.remove-row', function( e ) {
+				e.preventDefault();
+
+				var $row = $(this).closest( 'tr' );
+				_self.rowRemove( $row );
+
+			});
+
+		this.$addButton.on( 'click', function(e) {
+			e.preventDefault();
+
+			_self.rowAdd();
+		});
+
+		this.dialog.$cancel.on( 'click', function( e ) {
+			e.preventDefault();
+			$.magnificPopup.close();
+		});
+
+		return this;
+	},
+
+	rowAdd: function() {
+
+        //check tresor sur montagne
+        var adOnMount = mountainList.find(amount => amount.X == $("#adventurerX").val() && amount.Y == $("#adventurerY").val());
+        if (adOnMount) {
+            new PNotify({
+                title: 'Coordonnées',
+                text: "Impossible l'aventurier est sur une montagne",
+                type: 'custom',
+                addclass: 'notification-danger',
+                icon: 'fa fa-times'
+            });
+            return;
+        }
+
+        var adOnTreasor = treasorList.find(aTreasor => aTreasor.X == $("#adventurerX").val() && aTreasor.Y == $("#adventurerY").val());
+        if (adOnMount) {
+            new PNotify({
+                title: 'Coordonnées',
+                text: "Impossible l'aventurier est sur un trésor",
+                type: 'custom',
+                addclass: 'notification-danger',
+                icon: 'fa fa-times'
+            });
+            return;
+        }
+
+        //check regex sur la liste des mouvements
+        if(!$("#adventurerMouv").val().match(/^[ADG]+$/)){
+            new PNotify({
+                title: 'Mouvenent error',
+                text: 'Les mouvements autorisés sont "A", "D" ou "G"',
+                type: 'custom',
+                addclass: 'notification-danger',
+                icon: 'fa fa-times'
+            });
+            return;
+        }
+
+		var adventurerXY = adventurerList.find(aAdventurer => aAdventurer.X == $("#adventurerX").val() && aAdventurer.Y == $("#adventurerY").val() );
+		if(adventurerXY ){
+            new PNotify({
+                title: 'Coordonnées',
+                text: 'Aventurier déjà présent à ces coordonnées',
+                type: 'custom',
+                addclass: 'notification-danger',
+                icon: 'fa fa-times'
+            });
+			return;
+		}
+
+        var adventurerName = adventurerList.find(aAdventurer => aAdventurer.name == $("#adventurerName").val() );
+		if(adventurerName ){
+            new PNotify({
+                title: 'Nom',
+                text: 'Aventurier déjà présent avec ce nom',
+                type: 'custom',
+                addclass: 'notification-danger',
+                icon: 'fa fa-times'
+            });
+			return;
+		}
+
+		this.$addButton.attr({ 'disabled': 'disabled' });
+
+		var actions,
+			data,
+			$row;
+
+		actions = [
+			'<a href="#" class="hidden on-editing save-row"><i class="fa fa-save"></i></a>',
+			'<a href="#" class="hidden on-editing cancel-row"><i class="fa fa-times"></i></a>',
+			// '<a href="#" class="on-default edit-row"><i class="fa fa-pencil"></i></a>',
+			'<a href="#" class="on-default remove-row"><i class="fa fa-trash-o"></i></a>'
+		].join(' ');
+
+		data = this.datatable.row.add([ '', '', '', '', '', actions ]);
+		$row = this.datatable.row( data[0] ).nodes().to$();		
+
+		$row
+			.addClass( 'adding' )
+			.find( 'td:last' )
+			.addClass( 'actions' );
+			
+		
+		$row.children().eq(0)
+			.addClass( 'adName' );
+		$row.children().eq(1)
+			.addClass( 'adX' );
+		$row.children().eq(2)
+			.addClass( 'adY' );
+		$row.children().eq(3)
+			.addClass( 'adDir' );
+		$row.children().eq(4)
+			.addClass( 'adMouv' );
+			
+					
+		this.rowEdit( $row );
+
+		this.datatable.order([0,'asc']).draw(); // always show fields
+	},
+
+	rowCancel: function( $row ) {
+		var _self = this,
+			$actions,
+			i,
+			data;
+
+		if ( $row.hasClass('adding') ) {
+			this.rowRemove( $row );
+		} else {
+
+			data = this.datatable.row( $row.get(0) ).data();
+			this.datatable.row( $row.get(0) ).data( data );
+
+			$actions = $row.find('td.actions');
+			if ( $actions.get(0) ) {
+				this.rowSetActionsDefault( $row );
+			}
+
+			this.datatable.draw();
+		}
+	},
+
+	rowEdit: function( $row ) {
+
+		var _self = this,
+			data;
+
+		data = this.datatable.row( $row.get(0) ).data();
+
+		$row.children( 'td' ).each(function( i ) {
+			var $this = $( this );			
+
+			if ( $this.hasClass('actions') ) {
+				_self.rowSetActionsEditing( $row );
+			} else {
+
+				if ( $this.hasClass('adName') ) {
+					$this.html( '<input type="text" class="form-control input-block" value="' + $("#adventurerName").val() + '"/>' );
+				}
+				if ( $this.hasClass('adX') ) {
+					$this.html( '<input type="text" class="form-control input-block" value="' + $("#adventurerX").val() + '"/>' );
+				}
+				if ( $this.hasClass('adY') ) {
+					$this.html( '<input type="text" class="form-control input-block" value="' + $("#adventurerY").val() + '"/>' );
+				}
+				if ( $this.hasClass('adDir') ) {
+					$this.html( '<input type="text" class="form-control input-block" value="' + $("#adventurerDir").val() + '"/>' );
+				}
+				if ( $this.hasClass('adMouv') ) {
+					$this.html( '<input type="text" class="form-control input-block" value="' + $("#adventurerMouv").val() + '"/>' );
+				}
+			}
+		});
+
+		var aAdventurer = {
+			id: 'ad_'+$("#adventurerX").val()+"_"+$("#adventurerY").val(),
+            name: $("#adventurerName").val(),
+			X: parseInt($("#adventurerX").val(), 10),
+			Y: parseInt($("#adventurerY").val(), 10),
+            dir: $("#adventurerDir").val(),
+            mouv: $("#adventurerMouv").val(),
+		}
+		adventurerList.push(aAdventurer);
+		$row.attr('id', aAdventurer.id);
+
+		this.rowSave( $row );
+	},
+
+	rowSave: function( $row ) {
+		var _self     = this,
+			$actions,
+			values    = [];
+
+		if ( $row.hasClass( 'adding' ) ) {
+			this.$addButton.removeAttr( 'disabled' );
+			$row.removeClass( 'adding' );
+		}
+
+		values = $row.find('td').map(function() {
+			var $this = $(this);
+
+			if ( $this.hasClass('actions') ) {
+				_self.rowSetActionsDefault( $row );
+				return _self.datatable.cell( this ).data();
+			} else {
+				return $.trim( $this.find('input').val() );
+			}
+		});
+
+		this.datatable.row( $row.get(0) ).data( values );
+
+		$actions = $row.find('td.actions');
+		if ( $actions.get(0) ) {
+			this.rowSetActionsDefault( $row );
+		}
+
+		this.datatable.draw();
+	},
+
+	rowRemove: function( $row ) {
+		if ( $row.hasClass('adding') ) {
+			this.$addButton.removeAttr( 'disabled' );
+		}
+
+        adventurerList = adventurerList.filter(( aAdventurer ) => {return aAdventurer.id !== $row.get(0).id;});
+
+		this.datatable.row( $row.get(0) ).remove().draw();
+	},
+
+	rowSetActionsEditing: function( $row ) {
+		$row.find( '.on-editing' ).removeClass( 'hidden' );
+		$row.find( '.on-default' ).addClass( 'hidden' );
+	},
+
+	rowSetActionsDefault: function( $row ) {
+		$row.find( '.on-editing' ).addClass( 'hidden' );
+		$row.find( '.on-default' ).removeClass( 'hidden' );
+	}
+
+};
+
+$(function() {
+	adventurerTable.initialize();
+});
+
+}).apply( this, [ jQuery ]);
+</script>

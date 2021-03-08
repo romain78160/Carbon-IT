@@ -4,14 +4,7 @@
 	<% include partials/head %>
 </head>
 <body>
-  <!-- start: page -->
-
-	<form class="form-horizontal" action="<%=baseurl%>launch" validate method="post" id="form_launch">
-
-		<button type="submit" class="btn btn-primary">Valider</button>
-
-	</form>
-  
+  <!-- start: page -->  
   <section role="main" class="content-body">
 
 	<div class="row">
@@ -32,7 +25,7 @@
 						</div>
 						<ul class="wizard-steps">
 							<li class="active">
-								<a href="#Map" data-toggle="tab"><span>1</span>Définition de la carte</a>
+								<a href="#Map" data-toggle="tab"><span>1</span>Carte</a>
 							</li>
 							<li>
 								<a href="#Mountains" data-toggle="tab"><span>2</span>Montagnes</a>
@@ -46,118 +39,22 @@
 						</ul>
 					</div>
 	
-					<form class="form-horizontal" novalidate="novalidate">
+					<form class="form-horizontal" action="<%=baseurl%>launch" validate method="post">
 						<div class="tab-content">
 							<div id="Map" class="tab-pane active">
-								<span>Définition de la carte</span>
-								<div class="form-group">
-									<label class="col-sm-3 control-label" for="MapWidth">Largeur</label>
-									<div class="col-sm-2">
-										<%- include('inputSpin/component',
-											{
-												id: 'MapWidth',
-												value: 8,
-												className: "",
-												isrequired: "required",
-												min: 0,
-												max: 30,
-												step: 1,
-												decimals: 0
-											}
-										) %>
+								<% include map %>
+							</div>
 
-									</div>
-								</div>
-								<div class="form-group">
-									<label class="col-sm-3 control-label" for="MapHeight">Password</label>
-									<div class="col-sm-2">
-										<%- include('inputSpin/component',
-											{
-												id: 'MapHeight',
-												value: 4,
-												className: "",
-												isrequired: "required",
-												min: 0,
-												max: 30,
-												step: 1,
-												decimals: 0
-											}
-										) %>
-									</div>
-								</div>
-							</div>
 							<div id="Mountains" class="tab-pane">
-								<span>Montagne</span>
-								<div class="form-group">
-									<label class="col-sm-3 control-label" for="w4-first-name">First Name</label>
-									<div class="col-sm-9">
-										<input type="text" class="form-control" name="first-name" id="w4-first-name" required>
-									</div>
-								</div>
-								<div class="form-group">
-									<label class="col-sm-3 control-label" for="w4-last-name">Last Name</label>
-									<div class="col-sm-9">
-										<input type="text" class="form-control" name="last-name" id="w4-last-name" required>
-									</div>
-								</div>
+								<% include mountain %>
 							</div>
+
 							<div id="Treasures" class="tab-pane">
-								<span>trésors</span>
-								<div class="form-group">
-									<label class="col-sm-3 control-label" for="w4-cc">Card Number</label>
-									<div class="col-sm-9">
-										<input type="text" class="form-control" name="cc-number" id="w4-cc" required>
-									</div>
-								</div>
-								<div class="form-group">
-									<label class="col-sm-3 control-label" for="inputSuccess">Expiration</label>
-									<div class="col-sm-5">
-										<select class="form-control" name="exp-month" required>
-											<option>January</option>
-											<option>February</option>
-											<option>March</option>
-											<option>April</option>
-											<option>May</option>
-											<option>June</option>
-											<option>July</option>
-											<option>August</option>
-											<option>September</option>
-											<option>October</option>
-											<option>November</option>
-											<option>December</option>
-										</select>
-									</div>
-									<div class="col-sm-4">
-										<select class="form-control" name="exp-year" required>
-											<option>2014</option>
-											<option>2015</option>
-											<option>2016</option>
-											<option>2017</option>
-											<option>2018</option>
-											<option>2019</option>
-											<option>2020</option>
-											<option>2021</option>
-											<option>2022</option>
-										</select>
-									</div>
-								</div>
+								<% include treasor %>
 							</div>
+
 							<div id="Adventurers" class="tab-pane">
-								<div class="form-group">
-									<label class="col-sm-3 control-label" for="w4-email">Email</label>
-									<div class="col-sm-9">
-										<input type="text" class="form-control" name="email" id="w4-email" required>
-									</div>
-								</div>
-								<div class="form-group">
-									<div class="col-sm-3"></div>
-									<div class="col-sm-9">
-										<div class="checkbox-custom">
-											<input type="checkbox" name="terms" id="w4-terms" required>
-											<label for="w4-terms">I agree to the terms of service</label>
-										</div>
-									</div>
-								</div>
+								<% include adventurer %>
 							</div>
 						</div>
 					</form>
@@ -165,13 +62,13 @@
 				<div class="panel-footer">
 					<ul class="pager">
 						<li class="previous disabled">
-							<a><i class="fa fa-angle-left"></i> Previous</a>
+							<a><i class="fa fa-angle-left"></i> Précédent</a>
 						</li>
 						<li class="finish hidden pull-right">
-							<a>Finish</a>
+							<button type="button" class="btn btn-primary">Play</button>
 						</li>
 						<li class="next">
-							<a>Next <i class="fa fa-angle-right"></i></a>
+							<a>Suivant <i class="fa fa-angle-right"></i></a>
 						</li>
 					</ul>
 				</div>
@@ -180,10 +77,23 @@
 	</div>	
 
 </section>
+
 </body>
+
 <% include partials/scripts %>
 
 <script>
+
+	var map = {};
+
+	// $("#MapWidth").on("change",(event) => {
+	// 	map.w = $("#MapWidth").val();
+	// });
+	// $("#MapHeight").on("change",(event) => {
+	// 	map.h = $("#MapHeight").val();
+	// });
+	
+
 	var $w4finish = $('#w4').find('ul.pager li.finish'),
 		$w4validator = $("#w4 form").validate({
 		highlight: function(element) {
@@ -201,13 +111,32 @@
 	$w4finish.on('click', function( ev ) {
 		ev.preventDefault();
 		var validated = $('#w4 form').valid();
+
 		if ( validated ) {
-			new PNotify({
-				title: 'Congratulations',
-				text: 'You completed the wizard form.',
-				type: 'custom',
-				addclass: 'notification-success',
-				icon: 'fa fa-check'
+			var form = {};
+			form['map'] = map;
+			form['mountainList'] = mountainList;
+			form['treasorList'] = treasorList;
+			form['adventurerList'] = adventurerList;
+
+			axios.post("<%=baseurl%>launch", form)
+			.then(function (response) {
+				new PNotify({
+					title: 'Félicitation',
+					text: 'Fin de la carte aux trésors',
+					type: 'custom',
+					addclass: 'notification-success',
+					icon: 'fa fa-check'
+				});
+			})
+			.catch(function (error) {
+				new PNotify({
+					title: 'Server error',
+					text: 'Erreur pendant le jeu',
+					type: 'custom',
+					addclass: 'notification-danger',
+					icon: 'fa fa-times'
+				});
 			});
 		}
 	});
@@ -238,6 +167,11 @@
 			var $total = navigation.find('li').size() - 1;
 			$w4finish[ newindex != $total ? 'addClass' : 'removeClass' ]( 'hidden' );
 			$('#w4').find(this.nextSelector)[ newindex == $total ? 'addClass' : 'removeClass' ]( 'hidden' );
+
+			map = {
+				w: $("#MapWidth").val(),
+				h: $("#MapHeight").val()
+			};
 		},
 		onTabShow: function( tab, navigation, index ) {
 			var $total = navigation.find('li').length - 1;
@@ -248,4 +182,6 @@
 			tab.nextAll().removeClass('completed');
 		}
 	});
+
+
 </script>
